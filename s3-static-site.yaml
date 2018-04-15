@@ -19,6 +19,26 @@ Parameters:
     Description: |
       The ARN for the ACM Certificate to be used on this site's Cloudfront
       distribution.
+  DefaultTTL:
+    Type: Number
+    Default: 15
+    Description: |
+      The default TTL, in seconds, for items in the CloudFront cache
+      that do not have cache header information.  The default is set
+      low, under the assumption you will be developing your site.
+      Once in production, you should increase this value apropriately
+      (such as the AWS default of 86400).
+  PriceClass:
+    Type: String
+    AllowedValues: [ "ALL", "100", "200" ]
+    Default: "100"
+    ConstraintDescription: |
+      Allowed values are 100, 200, and ALL.
+    Description: |
+      100: Use Only US, Canada and Europe
+      200: Use Only US, Canada, Europe, and Asia
+      ALL: Use All Edge Locations (Best Performance)
+
 
 Mappings:
   RegionMap:
@@ -91,6 +111,7 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
+        PriceClass: !Sub "PriceClass_${PriceClass}"
         Origins:
           -
             DomainName: !Sub "${SiteHostName}.${SiteDomainName}.s3-website.${AWS::Region}.amazonaws.com"
@@ -107,6 +128,7 @@ Resources:
           AcmCertificateArn: !Ref CertArn
           SslSupportMethod: sni-only
         DefaultCacheBehavior:
+          DefaultTTL: !Ref DefaultTTL
           AllowedMethods:
             - OPTIONS
             - HEAD

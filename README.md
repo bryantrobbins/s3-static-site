@@ -34,3 +34,13 @@ provision.
       ParameterKey=SiteDomainName,ParameterValue=ratemytank.com
       ParameterKey=CertArn,ParameterValue=arn:aws:acm:us-east-1:123456789012:certificate/a3340aab-b529-43a7-a7f9-fca74b6b009a
 ```
+
+### Adding Content
+
+Copy static assets directly into your S3 bucket.  Make sure it is set
+to be publicly readable.
+
+```
+andy@shoggoth:s3-static-site$ aws s3 cp index.html s3://foobie.testtest.aws.cowell.org/index.html --acl public-read
+upload: ./index.html to s3://foobie.testtest.aws.cowell.org/index.html
+```
