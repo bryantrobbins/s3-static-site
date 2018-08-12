@@ -5,9 +5,15 @@ distribution.
 
 ## Requirements
 
-You need an existing Route53 Hosted Zone to reference, as well as the ARN for an
-existing ACM certificate that matches the domain you want.  It can be a wildcard
-cert.
+You need an existing Route53 Hosted Zone to reference.
+
+You need to receive e-mail to one of the following e-mail addresses in
+that domain:
+* hostmaster@...
+* admin@...
+* postmaster@...
+* administrator@...
+* webmaster@...
 
 ## Parameters
 
@@ -18,13 +24,22 @@ hostname portion is www.
 are creating.  For example, if you were creating the site\nwww.example.com,
 the domain name portion is example.com.  The domain\nname should NOT end in
 a period.
-* **CertArn**: The ARN for the ACM Certificate to be used on this site's Cloudfront
-distribution.
+* **DefaultTTL**: The default TTL, in seconds, for items in the CloudFront cache
+that do not have cache header information.  The default is set
+low, under the assumption you will be developing your site.
+Once in production, you should increase this value apropriately
+(such as the AWS default of 86400).
+* **PriceClass**: Describes the global scope for your CloudFront distribution.
+Allowed values are 100, 200, and ALL.
+  * 100: Use Only US, Canada and Europe
+  * 200: Use Only US, Canada, Europe, and Asia
+  * ALL: Use All Edge Locations (Best Performance)
 
 ## Launching Stack
 
-The stack build will take 30+ minutes, due to the length of time Cloudfront takes to
-provision.
+The stack build will take 30+ minutes, due to the length of time
+Cloudfront takes to provision.  In addition, it will require manual
+verification for the SSL certificate the stack creates.
 
 ```
 % aws cloudformation create-stack --stack-name example-stack \
@@ -32,7 +47,6 @@ provision.
   --parameters
       ParameterKey=SiteHostName,ParameterValue=test
       ParameterKey=SiteDomainName,ParameterValue=ratemytank.com
-      ParameterKey=CertArn,ParameterValue=arn:aws:acm:us-east-1:123456789012:certificate/a3340aab-b529-43a7-a7f9-fca74b6b009a
 ```
 
 ### Adding Content

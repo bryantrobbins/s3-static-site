@@ -14,11 +14,6 @@ Parameters:
       creating.  For example, if you were creating the site
       www.example.com, the domain name portion is example.com.  The domain
       name should NOT end in a period.
-  CertArn:
-    Type: String
-    Description: |
-      The ARN for the ACM Certificate to be used on this site's Cloudfront
-      distribution.
   DefaultTTL:
     Type: Number
     Default: 15
@@ -123,6 +118,11 @@ Resources:
             DNSName: !GetAtt SiteDistribution.DomainName
             HostedZoneId: Z2FDTNDATAQYW2
 
+  SiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub "*.${SiteDomainName}"
+
   SiteDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -141,7 +141,7 @@ Resources:
         Aliases:
           - !Sub "${SiteHostName}.${SiteDomainName}"
         ViewerCertificate:
-          AcmCertificateArn: !Ref CertArn
+          AcmCertificateArn: !Ref SiteCertificate
           SslSupportMethod: sni-only
         DefaultCacheBehavior:
           DefaultTTL: !Ref DefaultTTL
